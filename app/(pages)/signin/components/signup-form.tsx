@@ -31,7 +31,11 @@ const schema = yup.object({
     .required("O nome de usuário é obrigatório.")
     .matches(
       /^[a-zA-Z0-9._]+$/,
-      "O nome de usuário só pode conter letras, números, ' . ' ou ' _ '.",
+      "O nome de usuário só pode conter letras, números, '.' ou '_'.",
+    )
+    .matches(
+      /^(?=(?:.*[a-zA-Z]){3})/,
+      "O nome de usuário deve conter pelo menos 3 letras.",
     )
     .min(6, "Este campo precisa ter pelo menos 6 caracteres."),
   password: yup
