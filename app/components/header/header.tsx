@@ -12,6 +12,7 @@ import {
 import { Button } from "@/app/components/ui/button";
 import UserInfo from "@/app/components/header/user-info";
 import UserEmail from "@/app/components/header/user-email";
+import MessagesList from "@/app/components/messages-list";
 
 import { MenuIcon } from "lucide-react";
 
@@ -39,12 +40,14 @@ const Header = async () => {
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
-              <div className="space-y-2.5">
+              <div className="space-y-2.5 px-5 md:px-0">
                 <UserInfo user={user} />
                 <UserEmail email={user.email} />
               </div>
               <SheetTitle>Caixa de entrada</SheetTitle>
             </SheetHeader>
+
+            <MessagesList />
           </SheetContent>
         </Sheet>
       </div>
