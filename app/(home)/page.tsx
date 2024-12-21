@@ -3,6 +3,8 @@ import { authOptions } from "@/app/lib/auth";
 import { db } from "@/app/lib/prisma";
 import { redirect } from "next/navigation";
 
+import Container from "@/app/components/container";
+
 const Home = async () => {
   const session = await getServerSession(authOptions);
 
@@ -20,16 +22,7 @@ const Home = async () => {
     redirect("/signin");
   }
 
-  return (
-    <main className="flex min-h-screen w-full items-center justify-center">
-      <div className="rounded-lg border bg-background p-5 shadow">
-        <h1>
-          {user.firstName} {user.lastName}
-        </h1>
-        <p>{user.email}</p>
-      </div>
-    </main>
-  );
+  return <Container>Hello world!</Container>;
 };
 
 export default Home;
