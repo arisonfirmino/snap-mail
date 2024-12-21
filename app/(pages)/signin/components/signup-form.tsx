@@ -1,5 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -8,6 +12,9 @@ import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 
 import { LockKeyholeIcon, MoveRightIcon, UserIcon } from "lucide-react";
+
+import { createNewUser } from "@/app/actions/user";
+import { isUsernameAvailable } from "@/app/helpers/userHelpers";
 
 const schema = yup.object({
   name: yup
@@ -51,18 +58,53 @@ const schema = yup.object({
 type FormData = yup.InferType<typeof schema>;
 
 const SignUpForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
+  const onSubmit = async (data: FormData) => {
+    setIsLoading(true);
+
+    const checkIsUsernameAvailable = await isUsernameAvailable({
+      username: data.username,
+    });
+
+    if (!checkIsUsernameAvailable) {
+      setError("username", {
+        type: "manual",
+        message: "O nome de usuário já está em uso. Tente outro.",
+      });
+
+      setIsLoading(false);
+      return;
+    }
+
+    await createNewUser({
+      firstName: data.name,
+      lastName: data.lastName,
+      username: data.username,
+      password: data.password,
+    });
+
+    await signIn("credentials", {
+      redirect: false,
+      user: data.username,
+      password: data.password,
+    });
+
     reset();
+    setIsLoading(false);
+    router.replace("/");
   };
 
   return (
@@ -109,7 +151,11 @@ const SignUpForm = () => {
         error={errors.passwordConfirmation}
       />
 
-      <Button className="w-full justify-between uppercase">
+      <Button
+        type="submit"
+        disabled={isLoading}
+        className="w-full justify-between uppercase"
+      >
         Cadastrar <MoveRightIcon />
       </Button>
     </form>
